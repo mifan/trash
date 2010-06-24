@@ -2,6 +2,7 @@ require 'rubygems'
 
 require 'httparty'
 require 'cgi'
+require 'uri'
 require 'pp'
 
 
@@ -13,12 +14,11 @@ class TianyaUID
   no_follow true
   base_uri 'http://my.tianya.cn/info'
 
-
   def initialize(username)
     @username = username
   end
 
-  def uid
+  def userid
     tempid = 0
     begin
       self.class.get "/#{CGI.escape(USER_NAME)}"
@@ -35,7 +35,25 @@ class TianyaUID
 end
 
 
+class TianyaArticle
+  include HTTParty
+  no_follow true
+  base_uri 'http://my.tianya.cn/i/getUserArticleDo.jsp'
+
+  def initialize(username)
+    @username = username
+    @userid = TianyaUID.new(USER_NAME).userid
+  end
+
+  def articles
+    get_response = self.class.get('', :query => {:userName => @username, :idWriter => @userid, :type => 4 } )
+    get_response.body
+  end
+
+end
  
-tianya_uid = TianyaUID.new(USER_NAME)
-puts tianya_uid.uid
+article  = TianyaArticle.new(USER_NAME)
+articles = URI.extract(article.articles,'http').uniq
+
+puts articles
 
