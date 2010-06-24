@@ -45,15 +45,19 @@ class TianyaArticle
     @userid = TianyaUID.new(USER_NAME).userid
   end
 
-  def articles
+  def article_links(date = nil)
     get_response = self.class.get('', :query => {:userName => @username, :idWriter => @userid, :type => 4 } )
-    get_response.body
+
+    URI.extract(get_response.body,'http').uniq.delete_if do |a|
+      (/^http\:\/\/\w+\.tianya\.cn\/publicforum\/content/ =~ a) == nil
+    end
+
   end
 
 end
  
 article  = TianyaArticle.new(USER_NAME)
-articles = URI.extract(article.articles,'http').uniq
 
-puts articles
+
+puts article.article_links
 
