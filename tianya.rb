@@ -1,11 +1,5 @@
 # coding: utf-8
 
-require 'rubygems'
-require 'httparty'
-require 'cgi'
-require 'uri'
-require 'pp'
-
 if RUBY_VERSION < '1.9'
   $KCODE='u'
 else
@@ -13,6 +7,11 @@ else
   Encoding.default_internal = Encoding::UTF_8
 end
 
+require 'rubygems'
+require 'httparty'
+require 'cgi'
+require 'uri'
+require 'pp'
 
 dir = Pathname(__FILE__).dirname.expand_path
 require dir + 'lib/tianya_uid'
@@ -28,8 +27,8 @@ article  = TianyaArticle.new(USER_NAME)
 
 max_no = article.max_list_no
 puts "max_no:#{max_no}"
-(max_no..max_no).each do |i|
-  links = article.page_articles(max_no-i+1)
+(1..max_no).each do |i|
+  links = article.page_articles(i)
   puts "page #{max_no}....."
  
   puts "\n"
